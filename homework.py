@@ -1,4 +1,4 @@
-from typing import Dict, List, Type
+from typing import Dict, List, Type, Union
 from dataclasses import asdict, dataclass
 
 
@@ -10,11 +10,11 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    message: str = ("Тип тренировки: {training_type}; "
-                    "Длительность: {duration:.3f} ч.; "
-                    "Дистанция: {distance:.3f} км; "
-                    "Ср. скорость: {speed:.3f} км/ч; "
-                    "Потрачено ккал: {calories:.3f}.")
+    message: str = ('Тип тренировки: {training_type}; '
+                    'Длительность: {duration:.3f} ч.; '
+                    'Дистанция: {distance:.3f} км; '
+                    'Ср. скорость: {speed:.3f} км/ч; '
+                    'Потрачено ккал: {calories:.3f}.')
 
     def get_message(self) -> str:
         """Возвращает информационное сообщение о тренировке."""
@@ -59,7 +59,6 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    MIN_IN_H: float = 60
     CALORIES_MEAN_SPEED_MULTIPLIER: float = 18
     CALORIES_MEAN_SPEED_SHIFT: float = 1.79
 
@@ -127,18 +126,16 @@ class Swimming(Training):
                 * self.duration)
 
 
-def read_package(workout_type: str, data: List) -> Training:
+def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
     """Прочитать данные полученные от датчиков."""
     training_mapping: Dict[str, Type[Training]] = {
         'SWM': Swimming,
         'RUN': Running,
         'WLK': SportsWalking
     }
-
-    if workout_type in training_mapping:
-        return training_mapping[workout_type](*data)
     if workout_type not in training_mapping:
         raise ValueError('Этой тренировки не существует.')
+    return training_mapping[workout_type](*data)
 
 
 def main(training: Training) -> None:
